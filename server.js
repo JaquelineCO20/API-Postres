@@ -13,9 +13,9 @@ app.set('port', process.env.PORT || 2000);
 // Configuración de la base de datos
 const dbOptions = {
     host: 'autorack.proxy.rlwy.net',
-    port: 45599,
+    port: 55862,
     user: 'root',
-    password: 'XkMjwWRdiBXxEalgraonEaIDThMpNbvq',
+    password: 'gNMJvkutYwnjlgGHnGjMhuVFTzkGvabU',
     database: 'postres',
     waitForConnections: true,
     connectionLimit: 10,
