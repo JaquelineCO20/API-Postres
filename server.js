@@ -21,7 +21,6 @@ const dbOptions = {
     connectionLimit: 10,
     queueLimit: 0,
     connectTimeout: 10000, // Tiempo para intentar conectar (10s)
-    acquireTimeout: 10000, // Tiempo para adquirir conexión (10s)
 };
 
 // Middleware para la conexión con la base de datos
@@ -41,7 +40,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:2000', // Cambia esto al dominio que te proporcione Railway
+                url: process.env.RAILWAY_URL || 'http://localhost:2000',
             },
         ],
     },
@@ -55,14 +54,15 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Middleware para mantener la conexión activa
 setInterval(() => {
-    app.get('dbConnection').getConnection((err, connection) => {
+    const connection = mysql.createConnection(dbOptions);
+    connection.connect((err) => {
         if (err) {
             console.error('Error manteniendo la conexión:', err);
         } else {
-            connection.ping(); // Enviar un "ping" al servidor MySQL
+            connection.ping(); // Mantener la conexión activa
             console.log('Conexión a la base de datos mantenida activa.');
-            connection.release();
         }
+        connection.end(); // Cierra la conexión después del ping
     });
 }, 30000); // Cada 30 segundos
 
