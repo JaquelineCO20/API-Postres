@@ -16,7 +16,12 @@ const dbOptions = {
     port: 45599,
     user: 'root',
     password: 'XkMjwWRdiBXxEalgraonEaIDThMpNbvq',
-    database: 'postres'
+    database: 'postres',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    connectTimeout: 10000, // Tiempo para intentar conectar (10s)
+    acquireTimeout: 10000, // Tiempo para adquirir conexión (10s)
 };
 
 // Middleware para la conexión con la base de datos
@@ -36,7 +41,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:2000',
+                url: 'http://localhost:2000', // Cambia esto al dominio que te proporcione Railway
             },
         ],
     },
@@ -47,6 +52,19 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 // Middleware de Swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
+// Middleware para mantener la conexión activa
+setInterval(() => {
+    app.get('dbConnection').getConnection((err, connection) => {
+        if (err) {
+            console.error('Error manteniendo la conexión:', err);
+        } else {
+            connection.ping(); // Enviar un "ping" al servidor MySQL
+            console.log('Conexión a la base de datos mantenida activa.');
+            connection.release();
+        }
+    });
+}, 30000); // Cada 30 segundos
 
 // Rutas
 app.use('/api', rutas);
