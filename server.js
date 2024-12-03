@@ -1,3 +1,4 @@
+const cors = require('cors');
 const express = require('express');
 const mysql = require('mysql2');
 const myconnection = require('express-myconnection');
@@ -6,6 +7,15 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
 const app = express();
+
+// Configuración de CORS
+const corsOptions = {
+    origin: '*', // Permite solicitudes desde cualquier origen
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeceras permitidas
+};
+
+app.use(cors(corsOptions));
 
 // Configuración del puerto
 app.set('port', process.env.PORT || 2000);
